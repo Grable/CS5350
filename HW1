@@ -1,7 +1,73 @@
+from enum import unique
 import numpy as np
 import pandas as pd
 import math
 import copy
 
-dataset = pd.read_csv("train.csv")
-print(dataset)
+training_dataset_path = "../CS5350/train.csv"
+testing_dataset_path = "../CS5350/test.csv"
+
+
+def entropy(data):
+    targets = [row[6] for row in data]
+    # find frequency for each unique target,  for each frequency find each labels entropy
+    # return summed entropy
+    return 0
+
+
+def _gain(data, ind):
+    # find entropy first in new function
+    # use information gain equation using attribute and data
+
+    return 0
+
+
+def best_att(data):
+    max_gain = 0
+    max_gain_ind = -1
+    attribute_count = len(data[0]) - 1  # not including the label value
+    for i in range(attribute_count):
+        gain = _gain(data, i)
+        if gain > max_gain:
+            max_gain = gain
+            max_gain_ind = i
+    return max_gain_ind
+
+
+def build_tree(data, columns):
+    attribute_count = len(data[0]) - 1  # not including the label value
+    if attribute_count == 0:
+        return
+
+    targets = set([row[6] for row in data])
+
+    if len(targets) == 1:
+        return targets.pop()
+
+    max_gain_att = best_att(data)
+
+    tree = {columns[max_gain_att]: {}}  # store tree as dictionary
+
+
+# for training data
+with open(training_dataset_path, "r") as f:
+    train = []
+
+    for line in f:
+        train.append(line.strip().split(","))
+
+    targets = [row[6] for row in train]
+    unique_targets = set(targets)
+    columns = ["buying", "maint", "doors", "persons", "lug_boots", "safety", "label"]
+    # test_tree = build_tree(train, columns)
+    print(train[0])
+
+
+# for testing data, identical code, different datasets
+# with open(testing_dataset_path, "r") as f1:
+#     test = []
+
+#     for line in f1:
+#         test.append(line.strip().split(","))
+#     targets = [row[6] for row in terms]
+#     columns = ["buying", "maint", "doors", "persons", "lug_boots", "safety", "label"]
