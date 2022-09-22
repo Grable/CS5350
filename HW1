@@ -75,6 +75,8 @@ def build_tree(data, columns):
         filtered_tree = build_tree(val_data, columns)
 
         # associate filtered tree with "parent"
+        tree[columns[max_gain_att_ind]][val] = filtered_tree
+    return tree
 
 
 # for training data
@@ -87,15 +89,18 @@ with open(training_dataset_path, "r") as f:
     targets = [row[6] for row in train]
     unique_targets = set(targets)
     columns = ["buying", "maint", "doors", "persons", "lug_boots", "safety", "label"]
-    test_tree = build_tree(train, columns)
-    print(train[0])
-
+    train_tree = build_tree(train, columns)
+    print("TRAINING TREE")
+    print(train_tree)
 
 # for testing data, identical code, different datasets
-# with open(testing_dataset_path, "r") as f1:
-#     test = []
+with open(testing_dataset_path, "r") as f1:
+    test = []
 
-#     for line in f1:
-#         test.append(line.strip().split(","))
-#     targets = [row[6] for row in terms]
-#     columns = ["buying", "maint", "doors", "persons", "lug_boots", "safety", "label"]
+    for line in f1:
+        test.append(line.strip().split(","))
+    targets = [row[6] for row in test]
+    columns = ["buying", "maint", "doors", "persons", "lug_boots", "safety", "label"]
+    test_tree = build_tree(test, columns)
+    print("\n TESTING TREE")
+    print(test_tree)
