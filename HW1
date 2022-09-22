@@ -13,18 +13,31 @@ def entropy(data):
     unique = set(targets)
     freq = {i: targets.count(i) for i in unique}
     entropy = {
-        x: -(frequency / len(data)) * math.log(frequency / len(data), 2)
-        for x, frequency in freq.items()
+        y: -(frequency / len(data)) * math.log(frequency / len(data), 2)
+        for y, frequency in freq.items()
     }
     val = sum(entropy.values())
     return val
 
 
 def _gain(data, ind):
-    entropy_val = entropy(data)
-    # use information gain equation using attribute and data
+    gain = 0
+    attribute_val = [i[ind] for i in data]
+    unique_att_val = set(attribute_val)
 
-    return 0
+    # the gain begins...
+    for x in unique_att_val:
+        # probability math
+        length = len(attribute_val)
+        frequency = attribute_val.count(x)
+        probability = frequency / length
+
+        ind_only_data = [i for i in data if i[ind] == x]
+        ind_entropy = entropy(ind_only_data)
+        # increment gain based on entropy * probability using this particular attribute
+        gain += probability * ind_entropy
+    overall_entropy = entropy(data)
+    return overall_entropy - gain
 
 
 def best_att(data):
@@ -33,6 +46,7 @@ def best_att(data):
     attribute_count = len(data[0]) - 1  # not including the label value
     for i in range(attribute_count):
         gain = _gain(data, i)
+        # take largest gain of all attributes
         if gain > max_gain:
             max_gain = gain
             max_gain_ind = i
@@ -49,9 +63,18 @@ def build_tree(data, columns):
     if len(targets) == 1:
         return targets.pop()
 
-    max_gain_att = best_att(data)
+    max_gain_att_ind = best_att(data)
 
-    tree = {columns[max_gain_att]: {}}  # store tree as dictionary
+    tree = {columns[max_gain_att_ind]: {}}  # create tree as dictionary
+
+    # now the fun recursion begins
+    attribute_val = set([i[max_gain_att_ind] for i in data])
+
+    for val in attribute_val:
+        val_data = [i for i in data if i[max_gain_att_ind] == val]
+        filtered_tree = build_tree(val_data, columns)
+
+        # associate filtered tree with "parent"
 
 
 # for training data
