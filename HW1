@@ -53,6 +53,7 @@ def best_att(data):
     return max_gain_ind
 
 
+# TODO: ADD DEPTH LIMIT
 def build_tree(data, columns):
     attribute_count = len(data[0]) - 1  # not including the label value
     if attribute_count == 0:
