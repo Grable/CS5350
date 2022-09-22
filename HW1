@@ -10,6 +10,9 @@ testing_dataset_path = "../CS5350/test.csv"
 
 def entropy(data):
     targets = [row[6] for row in data]
+    unique = set(targets)
+    freq = {i: targets.count for i in unique}
+    
     # find frequency for each unique target,  for each frequency find each labels entropy
     # return summed entropy
     return 0
