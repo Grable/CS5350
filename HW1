@@ -10,6 +10,15 @@ prob1_dataset_path = "../CS5350/prob1.csv"
 tennis_dataset_path = "../CS5350/tennis.csv"
 
 
+def ME(data):
+    targets = [row[4] for row in data]
+    unique = set(targets)
+    freq = {i: targets.count(i) for i in unique}
+    majority_error = {y: abs(frequency / len(data)) for y, frequency in freq.items()}
+    val = min(majority_error.values())
+    return val
+
+
 def gini(data):
     targets = [row[4] for row in data]
     unique = set(targets)
@@ -66,7 +75,6 @@ def best_att(data):
     return max_gain_ind
 
 
-# TODO: ADD DEPTH LIMIT
 def build_tree(data, columns):
     attribute_count = len(data[0]) - 1  # not including the label value
     if attribute_count == 0:
@@ -100,6 +108,122 @@ def visualize(root, indent=0):
             visualize(v, indent + 2)
     else:
         print(" " * indent + repr(root))
+
+
+def gini_gain(data, ind):
+    gain = 0
+    attribute_val = [i[ind] for i in data]
+    unique_att_val = set(attribute_val)
+
+    # the gain begins...
+    for x in unique_att_val:
+        # probability math
+        length = len(attribute_val)
+        frequency = attribute_val.count(x)
+        probability = frequency / length
+
+        ind_only_data = [i for i in data if i[ind] == x]
+        ind_entropy = gini(ind_only_data)
+        # increment gain based on entropy * probability using this particular attribute
+        gain += probability * ind_entropy
+    overall_entropy = gini(data)
+    return overall_entropy - gain
+
+
+def best_att_gini(data):
+    max_gain = 0
+    max_gain_ind = -1
+    attribute_count = len(data[0]) - 1  # not including the label value
+    for i in range(attribute_count):
+        gain = gini_gain(data, i)
+        # take largest gain of all attributes
+        if gain > max_gain:
+            max_gain = gain
+            max_gain_ind = i
+    return max_gain_ind
+
+
+def build_tree_gini(data, columns):
+    attribute_count = len(data[0]) - 1  # not including the label value
+    if attribute_count == 0:
+        return
+
+    targets = set([row[4] for row in data])
+
+    if len(targets) == 1:
+        return targets.pop()
+
+    max_gain_att_ind = best_att_gini(data)
+
+    tree = {columns[max_gain_att_ind]: {}}  # create tree as dictionary
+
+    # now the fun recursion begins
+    attribute_val = set([i[max_gain_att_ind] for i in data])
+
+    for val in attribute_val:
+        val_data = [i for i in data if i[max_gain_att_ind] == val]
+        filtered_tree = build_tree_gini(val_data, columns)
+
+        # associate filtered tree with "parent"
+        tree[columns[max_gain_att_ind]][val] = filtered_tree
+    return tree
+
+
+def ME_gain(data, ind):
+    gain = 0
+    attribute_val = [i[ind] for i in data]
+    unique_att_val = set(attribute_val)
+
+    # the gain begins...
+    for x in unique_att_val:
+        length = len(attribute_val)
+        frequency = attribute_val.count(x)
+        probability = frequency / length
+        ind_only_data = [i for i in data if i[ind] == x]
+        ind_entropy = ME(ind_only_data)
+        # increment gain based on entropy * probability using this particular attribute
+        gain += probability * ind_entropy
+    overall_entropy = ME(data)
+    return overall_entropy - gain
+
+
+def best_att_ME(data):
+    max_gain = 0
+    max_gain_ind = -1
+    attribute_count = len(data[0]) - 1  # not including the label value
+    for i in range(attribute_count):
+        gain = ME_gain(data, i)
+        # take largest gain of all attributes
+        if gain > max_gain:
+            max_gain = gain
+            max_gain_ind = i
+    return max_gain_ind
+
+
+def build_tree_ME(data, columns):
+    attribute_count = len(data[0]) - 1  # not including the label value
+    if attribute_count == 0:
+        return
+
+    targets = set([row[4] for row in data])
+
+    if len(targets) == 1:
+        return targets.pop()
+
+    max_gain_att_ind = best_att_ME(data)
+
+    tree = {columns[max_gain_att_ind]: {}}  # create tree as dictionary
+
+    # now the fun recursion begins
+    attribute_val = set([i[max_gain_att_ind] for i in data])
+
+    for val in attribute_val:
+        val_data = [i for i in data if i[max_gain_att_ind] == val]
+        filtered_tree = build_tree_ME(val_data, columns)
+
+        # associate filtered tree with "parent"
+        tree[columns[max_gain_att_ind]][val] = filtered_tree
+    return tree
 
 
 # for training data
@@ -149,3 +273,7 @@ with open(tennis_dataset_path, "r") as p1:
     tennis_tree = build_tree(tennis, columns)
     print("tennis")
     print(tennis_tree)
+    val = -2 / (10 / 14)(math.log(2 / (10 / 14), 2)) - (
+        (8 / 14) / (10 / 14)(math.log((8 / 14) / (10 / 14), 2))
+    )
+    print(val)
