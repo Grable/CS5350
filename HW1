@@ -8,6 +8,7 @@ training_dataset_path = "../CS5350/train.csv"
 testing_dataset_path = "../CS5350/test.csv"
 prob1_dataset_path = "../CS5350/prob1.csv"
 tennis_dataset_path = "../CS5350/tennis.csv"
+bank_train_dataset_path = "../CS5350/bank_train.csv"
 
 
 def ME(data):
@@ -31,7 +32,7 @@ def gini(data):
 
 
 def entropy(data):
-    targets = [row[4] for row in data]
+    targets = [row[15] for row in data]
     unique = set(targets)
     freq = {i: targets.count(i) for i in unique}
     entropy = {
@@ -80,7 +81,7 @@ def build_tree(data, columns):
     if attribute_count == 0:
         return
 
-    targets = set([row[4] for row in data])
+    targets = set([row[15] for row in data])
 
     if len(targets) == 1:
         return targets.pop()
@@ -263,13 +264,42 @@ def build_tree_ME(data, columns):
 #     print("PROB1")
 #     print(prob1_tree)
 
-with open(tennis_dataset_path, "r") as p1:
-    tennis = []
+# with open(tennis_dataset_path, "r") as p1:
+#     tennis = []
 
-    for line in p1:
-        tennis.append(line.strip().split(","))
-    targets = [row[4] for row in tennis]
-    columns = ["Outlook", "Temperature", "Humidity", "Wind", "Play?"]
-    tennis_tree = build_tree(tennis, columns)
-    print("tennis")
-    print(tennis_tree)
+#     for line in p1:
+#         tennis.append(line.strip().split(","))
+#     targets = [row[4] for row in tennis]
+#     columns = ["Outlook", "Temperature", "Humidity", "Wind", "Play?"]
+#     tennis_tree = build_tree(tennis, columns)
+#     print("tennis")
+#     print(tennis_tree)
+
+with open(bank_train_dataset_path, "r") as b1:
+    bank_train = []
+
+    for line in b1:
+        bank_train.append(line.strip().split(","))
+    targets = [row[15] for row in bank_train]
+    columns = [
+        "Age",
+        "Job",
+        "Marital",
+        "Education",
+        "Default",
+        "Balance",
+        "Housing",
+        "Loan",
+        "Contact",
+        "Day",
+        "Month",
+        "Duration",
+        "Campaign",
+        "Pdays",
+        "Previous",
+        "Poutcome",
+        "y",
+    ]
+    bank_train_tree = build_tree(bank_train, columns)
+    print("bank_train")
+    print(bank_train_tree)
